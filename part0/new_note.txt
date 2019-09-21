@@ -1,0 +1,43 @@
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
+
+note over browser:
+browser sends data from the input field
+to the forms "action" attribute, 
+in this case /new_note, which is a post request
+end note
+
+server-->browser: HTTP 302 redirect to https://fullstack-exampleapp.herokuapp.com/notes
+
+note over browser:
+server processes the submitted form data, 
+creates and stores a new note
+and then responds with a redirect 
+end note
+
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/notes
+
+note over browser:
+browser sends a GET request to the url 
+from the servers redirect response,
+and in subsequent requests sends 
+GET requests to the .js .css and .json files
+end note
+
+server-->browser: HTML-code
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
+server-->browser: main.css
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.js
+server-->browser: main.js
+
+note over browser:
+When the browser loads the .js file it will send
+a GET request to the server and ask for data.json
+end note
+
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+server-->browser: [{ content: "Hello world", date: "2019-09-21" }, ...]
+
+note over browser:
+javascript reads the response (data.json) 
+and populates the notes list display with this data
+end note
