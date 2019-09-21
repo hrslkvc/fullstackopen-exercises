@@ -1,0 +1,15 @@
+note over browser:
+spa.js will listen for a submit event on the form,
+will take the input value and append it to the notes list display,
+and will create a new "note" object, with the input data and a timestamp,
+to be sent to the server
+end note
+
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+
+server-->browser: HTTP 201 Created {"message":"note created"}
+
+note over server:
+Server stores the note and returns a simple 201 status code,
+and a success message
+end note
