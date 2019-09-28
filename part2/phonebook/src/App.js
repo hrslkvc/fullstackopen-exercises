@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import Form from "./components/Form";
 import Numbers from "./components/Numbers";
+import Notification from "./components/Notification";
 
 import personService from "./services/persons";
 
@@ -12,6 +13,7 @@ const App = () => {
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
     const [filter, setFilter] = useState("");
+    const [message, setMesssage] = useState("");
 
     useEffect(() => {
         personService.getAll().then(response => setPersons(response.data));
@@ -43,15 +45,33 @@ const App = () => {
 
                 personService
                     .update({ ...personToUpdate, number: newNumber })
-                    .then(response =>
+                    .then(response => {
                         setPersons(
                             persons.map(person =>
                                 person.id === personToUpdate.id
                                     ? response.data
                                     : person
                             )
-                        )
-                    );
+                        );
+                        setMesssage({
+                            text: `Changed number for ${newName}`,
+                            type: "success"
+                        });
+                        setTimeout(() => setMesssage(null), 5000);
+                    })
+                    .catch(response => {
+                        setMesssage({
+                            text: `Information on ${newName} is already deleted`,
+                            type: "error"
+                        });
+                        setTimeout(() => setMesssage(null), 5000);
+
+                        setPersons(
+                            persons.filter(
+                                person => person.id !== personToUpdate.id
+                            )
+                        );
+                    });
             }
         } else {
             personService
@@ -59,7 +79,14 @@ const App = () => {
                     name: newName,
                     number: newNumber
                 })
-                .then(response => setPersons(persons.concat(response.data)));
+                .then(response => {
+                    setPersons(persons.concat(response.data));
+                    setMesssage({
+                        text: `Added ${newName}`,
+                        type: "success"
+                    });
+                    setTimeout(() => setMesssage(null), 5000);
+                });
         }
 
         setNewName("");
@@ -70,14 +97,20 @@ const App = () => {
         const confirmDelete = window.confirm(`Delete person ${person.name}?`);
 
         if (confirmDelete) {
-            personService
-                .deleteObject(person.id)
-                .then(setPersons(persons.filter(p => p.id !== person.id)));
+            personService.deleteObject(person.id).then(response => {
+                setPersons(persons.filter(p => p.id !== person.id));
+                setMesssage({
+                    text: `Deleted ${person.name}`,
+                    type: "success"
+                });
+                setTimeout(() => setMesssage(null), 5000);
+            });
         }
     };
 
     return (
         <div>
+            <Notification message={message}></Notification>
             <h2>Phonebook</h2>
             <Filter value={filter} onChange={handleFilter} />
             <h2>Add a new number</h2>
